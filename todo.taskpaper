@@ -1,8 +1,8 @@
 v1.0 Todo:
-	- Add support for RSS/ATOM
+    - Add support for RSS/ATOM
     - Add support for pages, not just posts
     - Add a blog/front page that is updated w/each new post
-	- Add monthly archive pages that are only updated as needed
+    - Add monthly archive pages that are only updated as needed
     - Add support for static assets, css, js, images, etc.
 
 Future Roadmap:

@@ -1,0 +1,10 @@
+
+(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧
+little, a static site generator
+
+    help      displays this message!
+    build     build your site!
+    version   displays little version number
+
+example: `$ ./little.sh help` would display this message
+

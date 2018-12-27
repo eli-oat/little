@@ -1,37 +1,68 @@
 #!/bin/bash
-cd "$(dirname "$0")" # Go to the script's directory
-. ./lib/mo # This loads the "mo" function
+LITTLE_VERSION_NUMBER='beta 1' # little's version number
+cd "$(dirname "$0")"           # Go to the script's directory
+. ./lib/mo                     # This loads the "mo" function
+source config.vars || exit 1   # Read config variables
 
-source config.vars || exit 1 # Read config variables
+USER_INPUT="$@"
 
-${MARKDOWN} # Convert post content from markdown to html and store in a tmp file. This tmp file will get removed at the end
+# Check that user input isn't blank
+if [ -n "$USER_INPUT" ]; then
 
-YEAR=$(date +'%Y')
-MONTH=$(date +'%m')
-DAY=$(date +'%d')
+	# Display help text
+	if [ ${USER_INPUT} == "help" ]; then
+		cat <<EOF | mo
+{{> lib/help.txt}}
+EOF
+	fi
 
-PUBLISHED_CONTENT_DIR=posts/published
-DRAFTS_CONTENT_DIR=posts/drafts
+	# Display version number
+	if [ ${USER_INPUT} == "version" ]; then
+		printf "\nlittle version: ${LITTLE_VERSION_NUMBER}\n\n"
+	fi
 
-mkdir -p ${PUBLISHED_CONTENT_DIR}/${YEAR}/${MONTH}/${DAY}
+	# Build the site
+	if [ ${USER_INPUT} == "build" ]; then
 
-MOVE_TO=${PUBLISHED_CONTENT_DIR}/${YEAR}/${MONTH}/${DAY}
+		${MARKDOWN} # Convert post content from markdown to html and store in a tmp file. This tmp file will getremoved at the end
 
-mv ${DRAFTS_CONTENT_DIR}/* ${MOVE_TO}/
+		YEAR=$(date +'%Y')
+		MONTH=$(date +'%m')
+		DAY=$(date +'%d')
 
-POST_SLUG_WITH_EXTENSION=$(ls ${MOVE_TO})
-POST_SLUG=${POST_SLUG_WITH_EXTENSION%%.*}
+		PUBLISHED_CONTENT_DIR=posts/published
+		DRAFTS_CONTENT_DIR=posts/drafts
 
-cat <<EOF | mo > tmp.html
+		mkdir -p ${PUBLISHED_CONTENT_DIR}/${YEAR}/${MONTH}/${DAY}
+
+		MOVE_TO=${PUBLISHED_CONTENT_DIR}/${YEAR}/${MONTH}/${DAY}
+
+		mv ${DRAFTS_CONTENT_DIR}/* ${MOVE_TO}/
+
+		POST_SLUG_WITH_EXTENSION=$(ls ${MOVE_TO})
+		POST_SLUG=${POST_SLUG_WITH_EXTENSION%%.*}
+
+		cat <<EOF | mo >tmp.html
 
 {{> templates/post.mustache}}
 
 EOF
 
-mkdir -p dist/${YEAR}/${MONTH}/${DAY}/${POST_SLUG}
+		mkdir -p dist/${YEAR}/${MONTH}/${DAY}/${POST_SLUG}
 
-DIST_POST=dist/${YEAR}/${MONTH}/${DAY}/${POST_SLUG}
+		DIST_POST=dist/${YEAR}/${MONTH}/${DAY}/${POST_SLUG}
 
-mv tmp.html ${DIST_POST}/index.html
+		mv tmp.html ${DIST_POST}/index.html
 
-rm -rf templates/tmp-content-template.html # Delete temporary post content
+        cp -r assets/ dist/ # Copy the contents of the assets folder to dist
+
+		rm -rf templates/tmp-content-template.html # Delete temporary post content
+	fi
+
+else
+
+# If no user input, display help text
+	cat <<EOF | mo
+{{> lib/help.txt}}
+EOF
+fi

@@ -50,10 +50,14 @@ EOF
 		mkdir -p dist/${YEAR}/${MONTH}/${DAY}/${POST_SLUG}
 		DIST_POST=dist/${YEAR}/${MONTH}/${DAY}/${POST_SLUG}
 		mv tmp.html ${DIST_POST}/index.html
-		cp -r assets/ dist/                                                                                                                                       # Copy the contents of the assets folder to dist
-		rm -rf templates/tmp-content-template.html                                                                                                                # Delete temporary post content
+		cp -r assets/ dist/                        # Copy the contents of the assets folder to dist
+		rm -rf templates/tmp-content-template.html # Delete temporary post content
 
-		echo "${YEAR}-${MONTH}-${DAY}-${POST_SLUG}=(${YEAR}/${MONTH}/${DAY}/${POST_SLUG}/index.html ${MOVE_TO}/${POST_SLUG_WITH_EXTENSION})" >>${DATABASE}/db.txt # Add reference to database
+		# Write basic info about the new post to post cache db
+		POST_CACHE_INFO="POST_${MONTH}_${DAY}_${POST_SLUG}=(\"${YEAR}/${MONTH}/${DAY}/${POST_SLUG}/index.html\" \"${MOVE_TO}/${POST_SLUG_WITH_EXTENSION}\")"
+		cat <(echo "${POST_CACHE_INFO}") ${DATABASE}/db.txt >${DATABASE}/tmp-db.txt
+		rm -rf ${DATABASE}/db.txt
+		mv ${DATABASE}/tmp-db.txt ${DATABASE}/db.txt
 
 	fi
 

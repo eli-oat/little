@@ -33,5 +33,5 @@ done < <(ls templates/tmp)
 
 for CONTENT in "${INDEX_CONTENT[@]}"
 do
-    echo $CONTENT # this represents a single post template to insert into a blog index
+    echo $CONTENT # TODO: this represents a single post template to insert into a blog index
 done

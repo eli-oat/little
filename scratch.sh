@@ -4,8 +4,34 @@ cd "$(dirname "$0")"           # Go to the script's directory
 . ./lib/mo                     # This loads the "mo" function
 source config.vars || exit 1   # Read config variables
 
-source lib/db/2018/db.txt || exit 1
+DATA_BASE=lib/db/2018/db.txt
 
-printf "\n\n"
+IFS=$'\n' read -d '' -r -a POSTS < ${DATA_BASE}
 
-echo ${POST_12_27_content2[0]}
+# INDEX_POSTS=$(head -25 $DATA_BASE)
+
+i=0
+for POST in "${POSTS[@]:0:26}"
+do
+    i=$((i + 1))
+    IFS=', ' read -r -a p <<< "$POST"
+
+    # echo "${p[0]}"
+    # echo "${p[1]}"
+
+    mkdir -p templates/tmp
+    pandoc ./${p[1]} -o templates/tmp/${i}.html
+    printf "<br>\n<br>\n<a href=${p[0]}>Permalink</a>" >> templates/tmp/${i}.html
+done
+
+iter=0
+while read line
+do
+    INDEX_CONTENT[ $iter ]="$line"        
+    (( $iter+1 ))
+done < <(ls templates/tmp)
+
+for CONTENT in "${INDEX_CONTENT[@]}"
+do
+    echo $CONTENT # this represents a single post template to insert into a blog index
+done

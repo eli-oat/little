@@ -21,7 +21,7 @@ do
 
     mkdir -p templates/tmp
     pandoc ./${p[1]} -o templates/tmp/${i}.html
-    printf "<br>\n<br>\n<a href=${p[0]}>Permalink</a>" >> templates/tmp/${i}.html
+    printf "\n<br>\n<a href=\"${p[0]}\">Permalink</a>\n" >> templates/tmp/${i}.html
 done
 
 iter=0
